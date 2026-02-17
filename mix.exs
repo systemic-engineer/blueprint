@@ -1,44 +1,121 @@
-defmodule {{module_name}}.MixProject do
+defmodule Blueprint.MixProject do
   use Mix.Project
+
+  @app :blueprint
+  @name "Blueprint"
+  @description "Schema-driven struct construction behaviour"
+  @repo "https://github.com/alexandra-wolf/#{@app}"
 
   def project do
     [
-      app: :{{app_name}},
-      version: "0.1.0",
-      elixir: "~> 1.17",
-      start_permanent: Mix.env() == :prod,
-      deps: deps(),
-      test_coverage: [tool: ExCoveralls],
+      app: @app,
+      elixir: ">= 1.7.4 and < 2.0.0",
+      elixirc_paths: elixirc_paths(Mix.env()),
       preferred_cli_env: [
         coveralls: :test,
         "coveralls.detail": :test,
         "coveralls.post": :test,
-        "coveralls.html": :test,
-        "coveralls.json": :test
+        "coveralls.html": :test
       ],
+      test_coverage: [tool: ExCoveralls],
+      start_permanent: Mix.env() == :prod,
+      aliases: aliases(),
+      deps: deps(),
+
+      # Deps
+      dialyzer: dialyzer(),
 
       # Docs
-      name: "{{module_name}}",
-      source_url: "https://github.com/yourusername/{{app_name}}",
-      description: "{{description}}"
+      name: @name,
+      source_url: @repo,
+      homepage_url: @repo,
+
+      # Hex
+      description: @description,
+      docs: docs(),
+      package: package(),
+      version: version()
     ]
   end
 
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
+
+  # Run "mix help compile.app" to learn about applications.
   def application do
     [
       extra_applications: [:logger]
     ]
   end
 
+  defp aliases do
+    [
+      "check.all": ["format --check-formatted", "credo", "dialyzer"]
+    ]
+  end
+
+  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      # Quality & Testing
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:excoveralls, "~> 0.18", only: :test},
+      # Optional
+      {:nimble_options, "~> 1.0", optional: true},
 
-      # Add your dependencies here
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
+      # No Runtime
+      {:credo, ">= 1.0.0", only: :dev, runtime: false},
+      {:dialyxir, ">= 1.0.0", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.29", only: :dev, runtime: false},
+
+      # Test
+      {:excoveralls, "~> 0.16", only: :test},
+      {:mox, "~> 1.0", only: :test}
     ]
+  end
+
+  defp dialyzer do
+    [
+      ignore_warnings: ".dialyzer_ignore.exs",
+      plt_add_apps: [],
+      plt_file: {:no_warn, ".dialyzer/dialyzer.plt"}
+    ]
+  end
+
+  #######
+  # Hex #
+  #######
+
+  @extras Path.wildcard("pages/**/*.md")
+  def docs do
+    [
+      main: @name,
+      source_ref: "v#{version()}",
+      source_url: @repo,
+      extras: @extras,
+      groups_for_modules: []
+    ]
+  end
+
+  def package do
+    [
+      files: ["lib", "mix.exs", "CHANGELOG*", "LICENSE*", "README*", "version"],
+      licenses: ["HL3-CL-ECO-EXTR-FFD-MIL-MY-SOC-SV-TAL"],
+      links: %{"GitHub" => @repo},
+      maintainers: ["Reed <reed@systemic.engineer>"]
+    ]
+  end
+
+  @version_file "version"
+  def version do
+    cond do
+      File.exists?(@version_file) ->
+        @version_file
+        |> File.read!()
+        |> String.trim()
+
+      System.get_env("REQUIRE_VERSION_FILE") == "true" ->
+        exit("Version file (`#{@version_file}`) doesn't exist but is required!")
+
+      true ->
+        "0.0.0-dev"
+    end
   end
 end
