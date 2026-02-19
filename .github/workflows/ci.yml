@@ -28,7 +28,7 @@ jobs:
             otp: "27.0"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       # Option 1: Use published actions (when available)
       # - uses: systemic-engineer/ci/actions/elixir-setup@main
@@ -46,7 +46,7 @@ jobs:
           elixir-version: ${{ matrix.elixir }}
 
       - name: Cache deps/
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: deps/
           key: v1-deps-elixir:${{ matrix.elixir }}-otp:${{ matrix.otp }}-${{ hashFiles('**/mix.lock') }}
@@ -60,7 +60,7 @@ jobs:
           mix deps.get
 
       - name: Cache _build/
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: _build/
           key: v1-build-elixir:${{ matrix.elixir }}-otp:${{ matrix.otp }}-${{ hashFiles('**/mix.lock') }}
@@ -78,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Set up Elixir
         uses: erlef/setup-beam@v1
@@ -87,7 +87,7 @@ jobs:
           elixir-version: "1.18"
 
       - name: Cache deps/
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: deps/
           key: v1-deps-dev-elixir:1.18-otp:27.0-${{ hashFiles('**/mix.lock') }}
@@ -101,7 +101,7 @@ jobs:
           mix deps.get
 
       - name: Cache _build/
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: _build/
           key: v1-build-dev-elixir:1.18-otp:27.0-${{ hashFiles('**/mix.lock') }}
@@ -119,7 +119,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Set up Elixir
         uses: erlef/setup-beam@v1
@@ -128,7 +128,7 @@ jobs:
           elixir-version: "1.18"
 
       - name: Cache deps/
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: deps/
           key: v1-deps-test-elixir:1.18-otp:27.0-${{ hashFiles('**/mix.lock') }}
@@ -142,7 +142,7 @@ jobs:
           mix deps.get
 
       - name: Cache _build/
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: _build/
           key: v1-build-test-elixir:1.18-otp:27.0-${{ hashFiles('**/mix.lock') }}
